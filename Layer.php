@@ -41,6 +41,9 @@ class Layer{
 
 	public function read($query, $param){
 
+
+		echo "<pre>", var_dump($query), "</pre>";
+
 		try{
 
 			$connect = (new Connect())->getInstance();
@@ -49,15 +52,32 @@ class Layer{
 
 			parse_str($param, $paramArray);
 
+			if(array_key_exists("limit", $paramArray) && array_key_exists("offset", $paramArray)){
+
+				foreach($paramArray as $key => $value){
+
+					$paramArray[$key] = (int)$value;
+
+				}
+			}
+
+			echo "<pre>", var_dump($param, $paramArray), "</pre>";
+
 			foreach ($paramArray as $key => $value) {
 				
 				$bindType = (is_numeric($value) ? PDO::PARAM_INT : PDO::PARAM_STR); 
+
+				echo "<pre>", var_dump($key, $value, $bindType),"</pre>";
 
 				$stmt->bindValue($key, $value, $bindType);
 
 			}
 
+			echo "<pre>", var_dump($stmt), "</pre>";
+
 			$stmt->execute();
+
+			
 
 			return $stmt;
 
