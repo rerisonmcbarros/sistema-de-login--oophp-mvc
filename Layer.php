@@ -8,6 +8,14 @@ class Layer{
 
 	protected $message;
 	protected $data;
+	protected $pdo;
+
+
+	public function __construct(){
+
+		$this->pdo = (new Connect())->getInstance();
+
+	}
 
 	public function __get($name){
 
@@ -23,17 +31,46 @@ class Layer{
 		$this->data->$name = $value;
 	}
 
-	public function create($table,$params,$columns){
+	public function __isset($name){
 
-		echo "INSERT INTO {$table} ($columns) VALUES ($params)";
+		return isset($this->data->$name);
+
+	}
+
+	public function create($table, $data){
 
 		try{
 
+			$data = (array)$data;
 
+			$dataKeys = array_keys($data);
+			$dataValues = array_values($data);
+
+
+			$columns = implode(",", $dataKeys);
+
+			$values = ":".implode(",:", $dataKeys);
+
+			//echo "<pre>", var_dump($columns, $values), "</pre>";
+
+			$stmt = $this->pdo()->prepare("INSERT INTO {$table} ({$columns}) VALUES ({$values})");
+
+			foreach($data as $key => $value){
+
+				$bindType = (is_numeric($value) ? PDO::PARAM_INT : PDO::PARAM_STR); 
+
+				//echo "<pre>", var_dump(":{$key}", $value, $bindType), "</pre>";
+
+				$stmt->bindValue(":{$key}", $value, $bindType);
+
+			}
+			
+			return $stmt->execute();
 
 		}catch(PDOException $esception){
 
 
+			echo "<pre>", var_dump($exception), "</pre>";
 
 		}
 
@@ -41,14 +78,9 @@ class Layer{
 
 	public function read($query, $param){
 
-
-		echo "<pre>", var_dump($query), "</pre>";
-
 		try{
 
-			$connect = (new Connect())->getInstance();
-
-			$stmt = $connect->prepare($query);
+			$stmt = $this->pdo()->prepare($query);
 
 			parse_str($param, $paramArray);
 
@@ -61,19 +93,12 @@ class Layer{
 				}
 			}
 
-			echo "<pre>", var_dump($param, $paramArray), "</pre>";
-
 			foreach ($paramArray as $key => $value) {
 				
 				$bindType = (is_numeric($value) ? PDO::PARAM_INT : PDO::PARAM_STR); 
-
-				echo "<pre>", var_dump($key, $value, $bindType),"</pre>";
-
 				$stmt->bindValue($key, $value, $bindType);
 
 			}
-
-			echo "<pre>", var_dump($stmt), "</pre>";
 
 			$stmt->execute();
 
@@ -90,16 +115,45 @@ class Layer{
 
 	}
 
-	public function update($table, $columns, $param){
+	public function update($table, $dataSet, $param){
 
-		echo "UPDATE {$table} SET {$columns} WHERE ($param)";
+		
 
 		try{
 
+			$data;
+
+			foreach($dataSet as $key => $value){
+
+				$data[] = "{$key} = :{$key}";
+
+			}
+
+			$data = implode(", ", $data);
+
+			$stmt = $this->pdo()->prepare("UPDATE {$table} SET {$data} WHERE id = :id");
+
+			parse_str($param, $paramArray);
+
+			$paramArray = array_merge($this->dataFilter(), $paramArray);
+
+			echo "<pre>", var_dump($paramArray), "</pre>";
+
+			foreach ($paramArray as $key => $value) {
+				
+				$bindType = (is_numeric($value) ? PDO::PARAM_INT : PDO::PARAM_STR); 
+
+				$stmt->bindValue($key, $value, $bindType);
+
+			}
+
+			$stmt->execute();
 
 
-		}catch(PDOException $esception){
+		}catch(PDOException $exception){
 
+
+			echo "<pre>", var_dump($exception), "</pre>";
 
 
 		}
@@ -109,13 +163,34 @@ class Layer{
 
 		echo "DELETE FROM {$table} WHERE {$param}";
 
+
 		try{
 
+			$stmt = $this->pdo()->prepare("DELETE FROM {$table} WHERE id =:id");
 
+			echo "<pre>", var_dump($param), "</pre>";
 
-		}catch(PDOException $esception){
+			parse_str($param, $paramArray);
 
+			echo "<pre>", var_dump($paramArray), "</pre>";
 
+			foreach($paramArray as $key => $value){
+
+				$bindType = (is_numeric($value) ? PDO::PARAM_INT : PDO::PARAM_STR); 
+
+				echo "<pre>", var_dump(":{$key}", $value, $bindType), "</pre>";
+
+				$stmt->bindValue(":{$key}", $value, $bindType);
+
+			}
+
+			echo "<pre>", var_dump($stmt), "</pre>";
+
+			$stmt->execute();
+
+		}catch(PDOException $exception){
+
+			echo "<pre>", var_dump($exception), "</pre>";
 
 		}
 
@@ -123,6 +198,17 @@ class Layer{
 	}
 
 
+	public function pdo(){
+
+		return $this->pdo;
+
+	}
+
+	public function data(){
+
+		return $this->data;
+
+	}
 
 
 	public function message(){
@@ -131,6 +217,18 @@ class Layer{
 
 	}
 
+	public function dataFilter(){
+
+		$data = (array)$this->data();
+
+		foreach( static::$unchanged as $key){
+
+			unset($data[$key]);
+
+		}
+
+		return $data;
+	}
 
 
 	public function filter(){
