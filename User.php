@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 require_once __DIR__."/Layer.php";
 
@@ -22,27 +23,20 @@ class User extends Layer{
 
 	}
 
-	public function find($query, $param){
-
-		$read = $this->read($query, $param);
-
-		return  $read->fetchObject(__CLASS__);
-
-	}
 
 	public function findByEmail($email, $columns = "*"){
 
-		$find = $this->find("SELECT {$columns} FROM {$this->table} WHERE email =:email", "email={$email}");
+		$find = $this->read("SELECT {$columns} FROM {$this->table} WHERE email =:email", "email={$email}");
 
-		return $find;
+		return $find->fetchObject(__CLASS__);
 
 	}
 
 	public function findById($id, $columns = "*"){
 
-		$find = $this->find("SELECT {$columns} FROM {$this->table} WHERE id =:id", "id={$id}");
+		$find = $this->read("SELECT {$columns} FROM {$this->table} WHERE id =:id", "id={$id}");
 
-		return $find;
+		return $find->fetchObject(__CLASS__);
 
 	}
 
@@ -102,16 +96,3 @@ class User extends Layer{
 
 
 }
-
-
-
-
-$user = new User();
-
-$newUser = $user->findById(52);
-
-
-
-
-
-echo "<pre>", var_dump( $newUser->save()), "</pre>";

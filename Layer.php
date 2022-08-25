@@ -137,7 +137,7 @@ class Layer{
 
 			$paramArray = array_merge($this->dataFilter(), $paramArray);
 
-			echo "<pre>", var_dump($paramArray), "</pre>";
+			//echo "<pre>", var_dump($paramArray), "</pre>";
 
 			foreach ($paramArray as $key => $value) {
 				
@@ -161,30 +161,27 @@ class Layer{
 	}
 	public function delete($table, $param){
 
-		echo "DELETE FROM {$table} WHERE {$param}";
-
-
 		try{
 
 			$stmt = $this->pdo()->prepare("DELETE FROM {$table} WHERE id =:id");
 
-			echo "<pre>", var_dump($param), "</pre>";
+			//echo "<pre>", var_dump($param), "</pre>";
 
 			parse_str($param, $paramArray);
 
-			echo "<pre>", var_dump($paramArray), "</pre>";
+			//echo "<pre>", var_dump($paramArray), "</pre>";
 
 			foreach($paramArray as $key => $value){
 
 				$bindType = (is_numeric($value) ? PDO::PARAM_INT : PDO::PARAM_STR); 
 
-				echo "<pre>", var_dump(":{$key}", $value, $bindType), "</pre>";
+				//echo "<pre>", var_dump(":{$key}", $value, $bindType), "</pre>";
 
 				$stmt->bindValue(":{$key}", $value, $bindType);
 
 			}
 
-			echo "<pre>", var_dump($stmt), "</pre>";
+			//echo "<pre>", var_dump($stmt), "</pre>";
 
 			$stmt->execute();
 
