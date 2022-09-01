@@ -2,7 +2,6 @@
 session_start();
 
 class Session{
-	
 
 	public const SESSION_PATH = "";
 
@@ -13,143 +12,82 @@ class Session{
 			session_start();
 
 		}
-
-		$this->sessionLoad();
-
 	}
 
 	public function __get($name){
 
-		return $this->$name;
+		if( !empty($_SESSION[$name]) ){
+
+			return $_SESSION[$name];
+		}
+
+		return null;
 	}
 
 	public function __set($name, $value){
 
-		$this->$name = $value;
+		$_SESSION[$name] = ( is_array($value) ? (object)$value : $value );
 	}
 
+	public function isset($name){
 
-	public function __isset($name){
-
-		return isset($this->$name);
-	}
-
-	public function __debugInfo(){
-
-		return (array)$this;
+		return isset($_SESSION[$name]);
 	}
 
 	public function set($name, $value){
   
 		$_SESSION[$name] = ( is_array($value) ? (object)$value : $value );
 
-		$this->sessionLoad();
-
 		return $this;
-
 	}
 
-	public function sessionLoad(){
+	public function data(){
 
-		foreach ($_SESSION as $index => $data){
-
-			$this->$index = $data;
-
-		}
+		return (object)$_SESSION;
 	}
 
 	public function has($name){
 
-		return isset($this->$name);
+		return isset($_SESSION[$name]);
 	}
 
 	public function sessionId(){
 
 		return session_id();
-
 	}
 
 	public function sessionPath(){
 
 		return self::SESSION_PATH;
-
 	}
 
 	public function unset($var){
 
 		unset($_SESSION[$var]);
-
-		unset($this->$var);
-
 		return $this;
-
 	}
 
 	public function unsetAll(){
 
 		session_unset();
-
-		if(empty($_SESSION )){
-
-			foreach($this as $key => $value){
-
-				unset($this->$key);
-			}
-		}
-
 		return $this;
 	}
 
 	public function destroy(){
-
+		session_unset();
 		session_destroy();
-
-		if(empty($_SESSION )){
-
-			foreach($this as $key => $value){
-
-				unset($this->$key);
-			}
-		}
-
 		return $this;
 
 	}
 
 	public function csrf(){
-
-		$_SESSION['csrf_token'] = bin2hex(random_bytes(5));
-
-		$this->sessionLoad();
-
-		return $this;
-
+		
+		return $_SESSION['csrf_token'] = bin2hex(random_bytes(5));
 	}
 
 
 }
 
-require_once __DIR__."/User.php";
 
-$session = new Session();
-
-$user = new User();
-
-$user = $user->findById(1);
-
-$session->set("user", $user->data());
-
-
-//$session->csrf();
-
-echo $session->sessionId();
-
-//$session->destroy();
-//session_destroy();
-
-$session->unsetAll();
-
-
-echo "<pre>", var_dump($session, $_SESSION, session_id(), $session->sessionId()), "</pre>";
 
 ?>

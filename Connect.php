@@ -4,22 +4,21 @@ require_once __DIR__."/config.php";
 
 class Connect{
 	
-	private $instance;
+	private static $instance;
 	private $error;
 
-	final public function __construct(){
+	
+	public static function getInstance(){
 
 		try{
 
-			$instance = new PDO(
+			self::$instance = new PDO(
 			"mysql:host=".DB_HOST.";dbname=".DB_NAME,
 			DB_USER,
 			DB_PASSWORD
 			);
 
-			$this->instance = $instance;
-
-		}catch(\Exception $exception){
+			}catch(\Exception $exception){
 
 			$this->error = [
 				$exception->getMessage(), 
@@ -27,21 +26,18 @@ class Connect{
 				$exception->getLine()
 			];
 
+
 		}
 
-	
-	}
-
-
-	public function getInstance(){
-
-		return $this->instance;
+		return self::$instance;
 	}
 
 	public function error(){
 
 		return $this->error;
 	}
+
+	final public function __construct(){}
 
 	final public function __clone(){}
 
