@@ -1,7 +1,6 @@
 <?php
-session_start();
 
-require_once __DIR__."/Layer.php";
+namespace Model;
 
 class User extends Layer{
 	
@@ -24,28 +23,36 @@ class User extends Layer{
 
 	}
 
+	public function find($terms, $params, $columns = "*"){
+
+		$find = $this->read("SELECT {$columns} FROM {$this->table} WHERE {$terms}", $params);
+
+		return $find->fetchObject(__CLASS__);
+
+	}
+
 
 	public function findByEmail($email, $columns = "*"){
 
-		$find = $this->read("SELECT {$columns} FROM {$this->table} WHERE email =:email", "email={$email}");
+		$find = $this->find("email =:email", "email={$email}", $columns);
 
-		return $find->fetchObject(__CLASS__);
+		return $find;
 
 	}
 
 	public function findById($id, $columns = "*"){
 
-		$find = $this->read("SELECT {$columns} FROM {$this->table} WHERE id =:id", "id={$id}");
+		$find = $this->find(" id =:id", "id={$id}", $columns);
 
-		return $find->fetchObject(__CLASS__);
+		return $find;
 
 	}
 
 	public function findByDoc($document, $columns = "*"){
 
-		$find = $this->read("SELECT {$columns} FROM {$this->table} WHERE document =:document", "document={$document}");
+		$find = $this->find(" document =:document", "document={$document}", $columns);
 
-		return $find->fetchObject(__CLASS__);
+		return $find;
 
 	}
 
@@ -71,13 +78,13 @@ class User extends Layer{
 		if(!$this->required()){
 
 			$this->message = "Preeencha todos os dados corretamente!";
-			return;
+			return null;
 		}
 
 		if(!filter_var($this->email, FILTER_VALIDATE_EMAIL)){
 
 			$this->message = "O email informado não é válido!"; 
-			return;
+			return null;
 		}
 		
 		if(mb_strlen($this->password) < 8 || mb_strlen($this->password) > 10  && empty(password_get_info($this->password)['algo']) ){
@@ -85,12 +92,11 @@ class User extends Layer{
 			echo "<pre>", var_dump(password_get_info($this->password), password_get_info("1")), "</pre>";
 
 			$this->message = "Sua senha deve possuir entre 8 e 10 caracteres!";
-			return;
+			return null;
 		
-		}else{
-
-			$this->password = password_hash($this->password, PASSWORD_DEFAULT);
 		}
+
+		$this->password = password_hash($this->password, PASSWORD_DEFAULT);
 
 
 		if(empty($this->id)){
@@ -98,7 +104,7 @@ class User extends Layer{
 			if($this->findByEmail($this->email)){
 				
 				$this->message = "O email informado já existe!";
-				return;
+				return null;
 			}
 
 			$userId = $this->create($this->table, $this->dataFilter());
@@ -112,10 +118,10 @@ class User extends Layer{
 
 			$userId = $this->id;
 
-			if($this->findByEmail($this->email) && $this->id != $this->findByEmail($this->email)->id){
+			if($this->find("email = :email AND id != :id", "email={$this->email}&id={$this->id}")){
 				
 				$this->message = "O email informado já existe!";
-				return;
+				return null;
 			}
 
 			$this->update( $this->table, $this->dataFilter(), "id={$this->id}");
@@ -123,11 +129,10 @@ class User extends Layer{
 	
 		}
 
-		$read = $this->read("SELECT * FROM {$this->table} WHERE id =:id", "id={$userId}");
 
-		$user = $read->fetchObject(__CLASS__);
+		$this->data = $this->findById($userId)->data();
 
-		return $user;
+		return $this;
 	}
 
 
@@ -150,27 +155,22 @@ class User extends Layer{
 
 }
 
-
+/*
 $user = new User();
 
-$user->bootUser("Rerison", "Barros", "rerison@email.com", "123456789", "", "");
+$user = $user->findByEmail("rerison4@email.com");
 
 if($user){
 
-	$user->save();
-	echo $user->message();
+	echo "<pre>", var_dump($user), "</pre>";
 
-}
+	$user->first_name = "Rérison";
 
-if($user = $user->findByEmail($user->email)){
-
-	$user->first_name = "Rerison";
-	$user->document = "02147927651";
+	$user->password = "password";
 
 	$user->save();
-	echo $user->message();
 
 }
-
 
 echo "<pre>", var_dump($user), "</pre>";
+*/

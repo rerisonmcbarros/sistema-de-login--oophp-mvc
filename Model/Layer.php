@@ -1,5 +1,10 @@
 <?php
-require_once __DIR__."/Connect.php";
+
+namespace Model;
+
+
+use \PDO;
+use \Core\Connect;
 
 class Layer{
 	
@@ -76,9 +81,9 @@ class Layer{
 
 			foreach ($paramArray as $key => $value) {
 
-				$bindType = ($key == "limit" || $key == "offset" ? PDO::PARAM_INT : PDO::PARAM_STR);
+				$bindType = ($key == "limit" || $key == "offset" ? \PDO::PARAM_INT : \PDO::PARAM_STR);
 			
-				$stmt->bindValue($key, $value, $bindType);
+				$stmt->bindValue(":$key", $value, $bindType);
 			}
 
 			$stmt->execute();
@@ -119,7 +124,7 @@ class Layer{
 
 			foreach ($paramArray as $key => $value) {
 
-				$stmt->bindValue($key, $value, $bindType);
+				$stmt->bindValue(":$key", $value);
 			}
 
 			$stmt->execute();
@@ -140,7 +145,7 @@ class Layer{
 
 			foreach($paramArray as $key => $value){
 				
-				$stmt->bindValue(":{$key}", $value, $bindType);
+				$stmt->bindValue(":{$key}", $value);
 			}
 
 			$stmt->execute();

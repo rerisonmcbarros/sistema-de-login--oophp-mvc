@@ -1,0 +1,26 @@
+{
+    "name": "rerison/homepage",
+    "description": "Home Page Rerison",
+    "type": "project",
+    "license": "proprietary",
+    "autoload": {
+        "psr-4": {
+            "Core\\": "Core/",
+            "Controller\\": "Controller/",
+            "Model\\": "Model/"
+        },
+
+         "files": ["Config.php"]
+    },
+    "authors": [
+        {
+            "name": "Rerison Barros"
+        }
+    ],
+    "minimum-stability": "stable",
+
+
+    "require": {
+
+    }
+}

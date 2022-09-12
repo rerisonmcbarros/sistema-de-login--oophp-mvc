@@ -1,5 +1,6 @@
 <?php
-session_start();
+
+namespace Core;
 
 class Session{
 
