@@ -2,14 +2,15 @@
 
 namespace Core;
 
-
-
+/** @package Core */
 class Connect{
 	
+	/** @var object */
 	private static $instance;
+	/** @var array*/
 	private $error;
 
-	
+	/** @return \PDO|null */
 	public static function getInstance(){
 
 		try{
@@ -28,19 +29,23 @@ class Connect{
 				$exception->getLine()
 			];
 
+			return null;
 
 		}
 
 		return self::$instance;
 	}
 
+	/** @return array|null */
 	public function error(){
 
 		return $this->error;
 	}
 
+	/** @return null */
 	final public function __construct(){}
 
+	/** @return null */
 	final public function __clone(){}
 
 }

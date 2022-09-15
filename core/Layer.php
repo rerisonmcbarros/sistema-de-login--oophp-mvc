@@ -1,17 +1,21 @@
 <?php
 
-namespace Model;
+namespace Core;
 
 
 use \PDO;
 use \Core\Connect;
 
+/** @package Core */
 class Layer{
 	
-
+	/** @var string */
 	protected $message;
+	/** @var object */
 	protected $data;
+	/** @var Exception */
 	protected $error;
+	/** @var object PDO */
 	protected $pdo;
 
 
@@ -20,6 +24,7 @@ class Layer{
 		$this->pdo = (Connect::getInstance());
 
 	}
+
 
 	public function __get($name){
 
@@ -41,7 +46,10 @@ class Layer{
 
 	}
 
-	public function create($table, $data){
+	/** @param string $table */
+	/** @param array $data */
+	/** @return int|Exception */
+	protected function create($table, $data){
 
 		try{
 
@@ -64,14 +72,20 @@ class Layer{
 
 			return $this->pdo()->lastInsertId();
 
-		}catch(PDOException $exception){
+		}catch(\PDOException $exception){
 
 			$this->error = $exception;
+
+			return null;
 		}
 
 	}
 
-	public function read($query, $param){
+
+	/** @param string $query */
+	/** @param string $param */
+	/** @return PDOStatement|null */
+	protected function read($query, $param){
 
 		try{
 
@@ -90,16 +104,22 @@ class Layer{
 
 			return $stmt;
 
-		}catch(PDOException $exception){
+		}catch(\PDOException $exception){
 
 			$this->error = $exception;
+
+			return null;
 
 		}
 
 
 	}
 
-	public function update($table, $dataSet, $param){
+	/** @param string $table */
+	/** @param array $dataSet */
+	/** @param string $param */
+	/** @return bool|null */
+	protected function update($table, $dataSet, $param){
 
 		
 
@@ -129,13 +149,22 @@ class Layer{
 
 			$stmt->execute();
 
-		}catch(PDOException $exception){
+			return true;
+
+		}catch(\PDOException $exception){
 
 			$this->error = $exception;
+
+			return null;
 		}
 
 	}
-	public function delete($table, $param){
+
+
+	/** @param string $table */
+	/** @param string $param */
+	/** @return bool|null */
+	protected function delete($table, $param){
 
 		try{
 
@@ -150,34 +179,41 @@ class Layer{
 
 			$stmt->execute();
 
-		}catch(PDOException $exception){
+			return true;
+
+		}catch(\PDOException $exception){
 
 			$this->error = $exception;
+
+			return null;
 
 		}
 
 
 	}
 
-	public function pdo(){
+	/** @return \PDO */
+	protected function pdo(){
 
 		return $this->pdo;
 
 	}
 
-	public function data(){
+	/** @return object */
+	protected function data(){
 
 		return $this->data;
 	}
 
-
-	public function message(){
+	/** @return string */
+	protected function message(){
 
 		return $this->message;
 
 	}
 
-	public function dataFilter(){
+	/** @return array */
+	protected function dataFilter(){
 
 		$data = (array)$this->data();
 
@@ -188,7 +224,9 @@ class Layer{
 		return $this->sanitize($data);
 	}
 
-	public function sanitize($data){
+	/** @param array $data */
+	/** @return array */
+	protected function sanitize($data){
 
 		$sanitized = [];
 
@@ -201,7 +239,8 @@ class Layer{
 		return $sanitized;
 	}
 
-	public function required(){
+	/** @return bool */
+	protected function required(){
 
 		$data = (array)$this->data();
 

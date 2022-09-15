@@ -15,6 +15,10 @@ class ComposerStaticInitfadd507a60bea5975454dfbd42427857
         array (
             'Model\\' => 6,
         ),
+        'L' => 
+        array (
+            'League\\Plates\\' => 14,
+        ),
         'C' => 
         array (
             'Core\\' => 5,
@@ -25,15 +29,19 @@ class ComposerStaticInitfadd507a60bea5975454dfbd42427857
     public static $prefixDirsPsr4 = array (
         'Model\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/Model',
+            0 => __DIR__ . '/../..' . '/model',
+        ),
+        'League\\Plates\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/league/plates/src',
         ),
         'Core\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/Core',
+            0 => __DIR__ . '/../..' . '/core',
         ),
         'Controller\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/Controller',
+            0 => __DIR__ . '/../..' . '/controller',
         ),
     );
 

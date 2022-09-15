@@ -2,15 +2,18 @@
 
 namespace Model;
 
+/** @package Model */
 class Login{
 
+	/** @var string */
 	private $message;
 
+	/** @return object|null */
 	public function signIn(){
 
 		if($this->input()['login']){
 
-			$user = new User();
+			$user = new \Model\User();
 
 			$user = $user->findByEmail($this->input()['email']);
 			
@@ -18,33 +21,33 @@ class Login{
 
 				if( password_verify($this->input()['password'], $user->password) ){
 
-					$session = new Session();
+					$session = new \Core\Session();
 
-					$session->set("user", $user->data());
+					$session->set("login", ["user" => $user->data()]);
 
 					$this->message = "login realizado com sucesso!";
 
-					return null;
+					return $this;
 				}
 
 			}
 
 			$this->message = "Usuário ou senha inválidos!";
 
-			return $this;
+			return null;
 
 		}
 
 	}
 
-
+	/** @return string */
 	public function message(){
 
 		return $this->message;
 
 	}
 
-
+	/** @return array */ 
 	public function input(){
 
 		$input = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRIPPED);
@@ -62,34 +65,6 @@ class Login{
 }
 
 
-
-
-
-$session = new Session();
-
-
-echo "<pre>", var_dump($_POST['token'], $session->csrf_token), "</pre>";
-
-if($_POST['login'] && $_POST['token'] == $session->csrf_token){
-
-	echo "Requisição aceita!";
-
-	$login = new Login();
-
-	$login->signIn();
-
-
-}else{
-
-	echo "Requisição não permitida!";
-}
-
-
-
-
-require_once __DIR__."/view-login.php";
-
-echo "<pre>", var_dump($login->input(), $login, $session->data(), $user), "</pre>";
 
 
 

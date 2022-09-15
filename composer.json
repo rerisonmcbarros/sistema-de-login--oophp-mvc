@@ -5,9 +5,9 @@
     "license": "proprietary",
     "autoload": {
         "psr-4": {
-            "Core\\": "Core/",
-            "Controller\\": "Controller/",
-            "Model\\": "Model/"
+            "Core\\": "core/",
+            "Controller\\": "controller/",
+            "Model\\": "model/"
         },
 
          "files": ["Config.php"]
@@ -21,6 +21,6 @@
 
 
     "require": {
-
+        "league/plates": "^3.4"
     }
 }
