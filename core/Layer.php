@@ -200,13 +200,13 @@ class Layer{
 	}
 
 	/** @return object */
-	protected function data(){
+	public function data(){
 
 		return $this->data;
 	}
 
 	/** @return string */
-	protected function message(){
+	public function message(){
 
 		return $this->message;
 

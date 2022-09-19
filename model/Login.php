@@ -13,6 +13,13 @@ class Login{
 
 		if($this->input()['login']){
 
+			if( empty($this->input()["email"]) || empty($this->input()["password"]) ){
+
+				$this->message = "Preencha todos dados corretamente!";
+
+				return null;
+			}
+
 			$user = new \Model\User();
 
 			$user = $user->findByEmail($this->input()['email']);

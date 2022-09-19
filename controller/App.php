@@ -16,11 +16,19 @@ class App{
 
 	public function home(){
 
-		echo "pagina home";
-
 		$session = new \Core\Session();
+
+		$login = new \Model\Login();
+
+		if($_POST["login"] && $POST["token"] == $session->csrf ){
+
+			$login->signIn();
+
+			$message = ($login->message() ?? "");
+
+		}
 		
-		$template = $this->view->render("view-login", ["session" => $session]);
+		$template = $this->view->render("view-login", ["session" => $session, "message" => $message]);
 
 		echo  $template;
 
